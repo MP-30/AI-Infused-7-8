@@ -1,0 +1,27 @@
+QUESTIONS = [
+    {
+        "category": "behavioral",
+        "question": "Tell me about a time you had to debug a difficult production issue.",
+        "expected_keywords": ["logs", "root cause", "monitoring", "rollback", "team"],
+    },
+    {
+        "category": "behavioral",
+        "question": "Describe a situation where you disagreed with a teamate. How did you handle it?",
+        "expected_keywords": ["communication", "compromise", "feedback", "listened"],
+    },
+    {
+        "category": "technical",
+        "question": "How would you design a rate limiter for a public API?",
+        "expected_keywords": ["throttling", "token bucket", "redis", "latency", "quota"],
+    },
+    {
+        "category": "technical",
+        "question": "Walk me through now you would design a URL shortener.",
+        "expected_keywords": ["hashing", "database", "scalability", "cache", "collision"],
+    },
+    {
+        "category": "behavioral",
+        "question": "Tell me about a time you had to learn a new technology quickly to finish a project",
+        "expected_keywords": ["documentation", "deadline", "prototype", "mentor", "practice"],
+    }
+]
