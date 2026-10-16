@@ -1,3 +1,5 @@
 .venv
 .env
 .idea
+.mcp.json
+InterviewIQ-Project/__pycache__/

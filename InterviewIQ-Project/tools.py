@@ -1,9 +1,12 @@
+import re
+
 FILLER_WORDS = ["um", "uh", "like", "basically", "actually", "you know", "so yeah", "i mean"]
 
 def detect_filler_words(answer: str) -> dict:
     '''count filler words (um, like etc) in a candidate's answer.'''
     text = answer.lower()
-    found = {w: text.count(w) for w in FILLER_WORDS if text.count(w) > 0}
+    counts = {w: len(re.findall(rf"\b{re.escape(w)}\b", text)) for w in FILLER_WORDS}
+    found = {w: n for w, n in counts.items() if n > 0}
     total = sum(found.values())
     return {
         "total": total,
@@ -21,7 +24,10 @@ STAR_SIGNALS = {
 def check_star_structure(answer: str) -> dict:
     '''check whether a behavioral answer covers situation, task, action, result.'''
     text = answer.lower()
-    present = {stage: any(sig in text for sig in signals) for stage, signals in STAR_SIGNALS.items()}
+    present = {
+        stage: any(re.search(rf"\b{re.escape(sig)}\b", text) for sig in signals)
+        for stage, signals in STAR_SIGNALS.items()
+    }
     missing = [stage for stage, ok in present.items() if not ok]
     return {
         "present": present,
@@ -32,7 +38,7 @@ def check_star_structure(answer: str) -> dict:
 def score_relevance(answer: str, expected_keywords: list) -> dict:
     '''score how many expected keywords appear in the answer.'''
     text = answer.lower()
-    covered = [kw for kw in expected_keywords if kw.lower() not in text]
+    covered = [kw for kw in expected_keywords if kw.lower() in text]
     missed = [kw for kw in expected_keywords if kw.lower() not in text]
     score = round (100* len(covered) / len(expected_keywords), 2) if expected_keywords else 0
     return {

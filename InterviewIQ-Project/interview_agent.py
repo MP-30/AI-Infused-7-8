@@ -1,4 +1,4 @@
-# interviewer_agent.py -- Ask 4 (optional bonus): a second, specialized agent
+# interview_agent.py -- Ask 4 (optional bonus): a second, specialized agent
 # ============================================================
 #  InterviewIQ -- Two-Agent Extension
 #  This is given fully worked, not a TODO file -- it goes beyond

@@ -184,10 +184,14 @@ def _run_loop(messages, results_out=None):
 
         messages.append(msg)
         for call in msg.tool_calls:
-            args = json.loads(call.function.arguments) if call.function.arguments else {}
-            fn = TOOL_FUNCTIONS[call.function.name]
-            result = fn(args)   # dict (or a string, for generate_final_report)
-            if results_out is not None and call.function.name != "generate_final_report":
+            fn = TOOL_FUNCTIONS.get(call.function.name)
+            try:
+                args = json.loads(call.function.arguments) if call.function.arguments else {}
+                result = fn(args) if fn else f"Error: unknown tool '{call.function.name}'."
+            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                result = f"Error: bad arguments for {call.function.name}: {e}"
+            # dict (or a string, for generate_final_report / errors)
+            if results_out is not None and isinstance(result, dict):
                 results_out[call.function.name] = result
             messages.append({
                 "role": "tool",
@@ -229,6 +233,11 @@ def ask_agent(user_message: str):
         {"role": "user", "content": user_message},
     ]
     return _run_loop(messages)
+
+
+def reset_session():
+    """Clear session memory so a new interview starts from scratch."""
+    session_log.clear()
 
 
 def ask_for_final_report():

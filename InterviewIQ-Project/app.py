@@ -30,6 +30,9 @@ def on_submit(answer, q_index):
     if q_index >= len(QUESTIONS):
         return "No more questions -- click 'Get Final Report'.", format_scorecard(), q_index, "**-- interview complete --**", ""
 
+    if not answer.strip():
+        return "Please type an answer before submitting.", format_scorecard(), q_index, f"**Q{q_index + 1}.** {QUESTIONS[q_index]['question']}", answer
+
     q = QUESTIONS[q_index]
     feedback = agent.run_turn(q["question"], answer, q["expected_keywords"])
     next_index = q_index + 1
@@ -48,6 +51,11 @@ def ask_coach(message):
 
 def final_report():
     return agent.ask_for_final_report()
+
+
+def restart():
+    agent.reset_session()
+    return "", format_scorecard(), 0, f"**Q1.** {QUESTIONS[0]['question']}", "", "", ""
 
 
 with gr.Blocks(title="InterviewIQ") as demo:
@@ -69,6 +77,7 @@ with gr.Blocks(title="InterviewIQ") as demo:
 
     report_btn = gr.Button("Get Final Report")
     report_box = gr.Markdown()
+    restart_btn = gr.Button("Restart Interview")
 
     submit_btn.click(
         on_submit,
@@ -77,6 +86,10 @@ with gr.Blocks(title="InterviewIQ") as demo:
     )
     meta_btn.click(ask_coach, inputs=meta_box, outputs=meta_reply)
     report_btn.click(final_report, outputs=report_box)
+    restart_btn.click(
+        restart,
+        outputs=[feedback_box, scorecard_box, q_index_state, question_display, answer_box, meta_reply, report_box],
+    )
 
 if __name__ == "__main__":
     demo.launch()
